@@ -1,0 +1,115 @@
+<script>
+    Vue.component('collapsible',{
+        props : ['proposal'],
+        template : `
+        <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>{{ proposal.name }}</div>
+            <div class="collapsible-body">
+                <div class="row">
+                    
+                    <div class="col s12 l3"><img src="/assets/test.jpeg" alt="" class="responsive-img"></div>
+                    <div class="col s12 l9">Description : {{ proposal.description }}</div>
+                    <div class="col s12 l9">Funding Agency : 
+                        <span v-for="agency in proposal.fundingagency">
+                            {{ agency.name }}
+                            <span v-if="agency !== proposal.fundingagency[proposal.fundingagency.length-1]">
+                                ,
+                            </span>
+                            </span>
+                    </div>
+                    <div class="col s12 l9">Discipline : 
+                        <span v-for="discipline in proposal.discipline">
+                                {{ discipline.name }}
+                                <span v-if="discipline !== proposal.discipline[proposal.discipline.length-1]">
+                                    ,
+                                </span>
+                            </span>
+                    </div>
+                    <div class="col s12 l9"><a :href="proposal.link" class="btn waves-effect waves-purple white-text purple">Find More</a></div>
+                    
+                   
+                        
+                </div>
+                <div class="row">
+                    <div class="col s12 l6">Published Date : {{ (new Date(proposal.publishdate)).getDate() + '/' + ((new Date(proposal.publishdate)).getMonth()+1) + '/' + (new Date(proposal.publishdate)).getFullYear() }}</div>
+                    <div class="col s12 l6 push-l2">Last Date : {{ (new Date(proposal.lastdate)).getDate() + '/' + ((new Date(proposal.lastdate)).getMonth()+1) + '/' + (new Date(proposal.lastdate)).getFullYear() }}</div>
+                </div>
+            </div>
+        </li>
+        `,
+        mounted :function(){          
+            $('.collapsible').collapsible();
+        }
+    });
+    Vue.component('collapsible-parent', {
+        props: ['search','fundingagency','discipline'],
+        data: function () {
+            return {
+                proposals: [],
+                isLoaded: false
+            }
+        },
+        template: `
+                <div class="container">
+                <div v-if="!isLoaded" class=" container center">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                <div v-else-if="filterProposals.length === 0" >
+                    <div class=" row center">
+                        <div class="col s6 l4 offset-l4 offset-s3">
+                            <img src="/assets/Not_Found.svg" class="responsive-img" />
+                        </div>
+                    </div>
+                    <div class=" row center">
+                        <div class="col s12 l12">
+                            <h5> No results.... </h5>
+                        </div>
+                    </div>
+                </div>
+                <div v-else>
+                <ul class="collapsible"> 
+                    <template v-for="proposal in filterProposals" >
+                        <collapsible :proposal="proposal"></collapsible>
+                    </template>   
+                </ul>
+                </div>
+                </div>
+    `,
+        mounted() {
+            axios
+                .get('/profile/getProposals')
+                .then(response => {
+                    this.proposals = response.data.proposals;
+                })
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                })
+                .finally(() => this.isLoaded = true);
+        },
+        computed: {
+            filterProposals: function () {
+                var ele = this.proposals.filter((para) => {
+                    return para.name.toUpperCase().match(this.search.toUpperCase()) 
+                    && para.discipline.some(item => this.discipline.includes(item._id) || this.discipline.length ==0)
+                    && para.fundingagency.some(item => this.fundingagency.includes(item._id) || this.fundingagency.length == 0);
+                    
+                });
+                document.getElementById('proposalbadge').innerText = ele.length;
+                return ele;
+            }
+        }
+    });
+</script>

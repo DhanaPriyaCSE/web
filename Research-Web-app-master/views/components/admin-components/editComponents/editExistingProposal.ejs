@@ -1,0 +1,403 @@
+<script>
+    Vue.component('proposal-existing',{
+        props:['fundingagency-list','discipline-list'],
+        template:`
+        <div> <!-- WRALL ALL THE BELOW INTO SINGLE ROOT -->
+        <div v-if="!isLoaded" class=" container center">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else>  
+        <div class="row">
+          <form class="col s12">
+            <div class="input-field col s12 l12">
+              <i class="material-icons prefix">search</i>
+              <input id="icon_prefix" type="text" class="validate" v-model="search">
+              <label for="icon_prefix">Search</label>
+            </div>
+          </form>
+            <div class="input-field col s12 l6">
+                <select v-model="selectedagency" multiple>
+                    <option value="" disabled selected>Filter By Funding Agency</option>
+                    <template v-for="agency in fundingagencyList">
+                        <option :value="agency._id">{{ agency.name }}</option>
+                    </template>
+                </select>
+                <label class="purple-text text-darken-1">Agency</label>
+            </div>
+            <div class="input-field col s12 l6">
+              <select v-model="selecteddiscipline" multiple>
+                <option value="" disabled selected>Filter By Discipline</option>
+                <template v-for="discipline in disciplineList">
+                    <option :value="discipline._id">{{ discipline.name }}</option>
+                </template>
+              </select>
+              <label class="purple-text text-darken-1">Discipline</label>
+            </div>
+        </div>  
+        <div v-if="filtereddata.length === 0">
+            <div class=" row center">
+                <div class="col s6 l4 offset-l4 offset-s3">
+                    <img src="/assets/Not_Found.svg" class="responsive-img"/>
+                </div>
+            </div>
+            <div class=" row center">
+                <div class="col s12 l12">
+                    <h5> No results.... </h5>
+                </div>
+            </div>
+        </div>
+        <div class="container" v-else>
+            <ul class="collapsible">
+                <template v-for="item in filtereddata" v-if>
+                    <collapsible-proposal :eachrow="item" :agency-list="fundingagencyList" :discipline-list="disciplineList"></collapsible-proposal>
+                </template>
+            </ul>
+        </div>
+        </div><!-- WRAP ALL THE ABOVE INTO A SINGLE ROOT -->
+        </div>
+        `,
+        data(){
+            return{
+                callData:[],
+                errored:false,
+                isLoaded:false,
+                search:'',
+                selectedagency:[],
+                selecteddiscipline:[]
+            }
+        },
+    beforeMount: function(){
+        
+        
+    },
+    mounted: function(){
+        // $('select').formSelect();
+        $('select').formSelect();
+            $('.modal').modal({
+                onOpenStart : function(){
+                    $('.datepicker').datepicker({
+                        format:"yyyy-mm-dd",
+                        container: 'body'
+                    });
+                }
+            });
+        axios
+            .get('/profile/getProposals')
+            .then(response => {
+                this.callData = response.data.proposals;
+            })
+            .catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+            .finally(() => {
+                this.isLoaded = true;
+            });
+         
+    },
+    computed: {
+            filtereddata: function () {
+                
+                var ele = this.callData.filter((para) => {
+                    //para.fundingagency.filter(item => this.selectedagency.includes(""+item._id))&&
+                    return para.name.toUpperCase().match(this.search.toUpperCase()) 
+                    && para.discipline.some(item => this.selecteddiscipline.includes(item._id) || this.selecteddiscipline.length ==0)
+                    && para.fundingagency.some(item => this.selectedagency.includes(item._id) || this.selectedagency.length == 0);
+                        // para.fundingagency._id.toUpperCase().match(this.selectedagency.toUpperCase()) &&
+                        // para.discipline._id.toUpperCase().match(this.selecteddiscipline.toUpperCase());
+                });
+                //document.getElementById('fellowshipbadge').innerText = ele.length;
+                //console.log(ele);
+                if(ele.length){
+                    $('.collapsible').collapsible();
+                    $('select').formSelect();
+                    $('.modal').modal({
+                        onOpenStart : function(){
+                            $('.datepicker').datepicker({
+                                format:"yyyy-mm-dd",
+                                container: 'body'
+                            });
+                        }
+                    });
+                }
+                return ele;
+            }
+        }
+        
+    });
+    Vue.component('modal-form-proposal',{
+        props : ['eachrow', 'agency-list', 'discipline-list'],
+        template: `
+            <form :id="eachrow._id" @submit.prevent="submit">
+                <div class="modal modal-fixed-footer" :id="eachrow._id+'form'">
+                    <div class="row modal-content">
+                        <div class="container">
+                            <div class="col s12 l12 input-field">
+                                <input id="title" name="name" type="text" :value="eachrow.name">
+                                <label for="title">Title</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <textarea id="desc" name="description" class="materialize-textarea" type="text" :value="eachrow.description"></textarea>
+                                <label for="desc">Description</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                               <select name="disciplineId" required multiple>
+                                    <option value="" selected disabled>Select Discipline</option>
+                                    <template v-for="discipline in disciplineList">
+                                        <option :value="discipline._id" :selected="shouldSelect(eachrow.discipline,discipline._id)">{{ discipline.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Discipline</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                                 <select name="agencyId" required multiple>
+                                    <option value="" selected disabled>Select Agency</option>
+                                    <template v-for="agency in agencyList">
+                                        <option :value="agency._id" :selected="shouldSelect(eachrow.fundingagency,agency._id)">{{ agency.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Ministry</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <textarea id="file" name="link" class="materialize-textarea" type="text" :value="eachrow.link"></textarea>
+                                <label for="file">File</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="publishdate" class="datepicker" id="sdate" :value="(new Date(eachrow.publishdate)).getFullYear() + '-' + ((new Date(eachrow.publishdate)).getMonth()+1) + '-' + (new Date(eachrow.publishdate)).getDate()">
+                                <label for="sdate">Published Date</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="lastdate" class="datepicker" id="edate" :value="(new Date(eachrow.lastdate)).getFullYear() + '-' + ((new Date(eachrow.lastdate)).getMonth()+1) + '-' + (new Date(eachrow.lastdate)).getDate()">
+                                <label for="edate">Last Date</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn-flat white-text red darken-3 modal-close"><i class="material-icons left">close</i> Cancel</a>
+                        <button type="submit" class="btn-flat white-text green modal-close"><i class="material-icons left">save</i> Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        `,
+        computed:{
+            
+        },
+        methods:{
+            shouldSelect : function(arr,para){
+                for (let index = 0; index < arr.length; index++) {
+                    if(arr[index]._id === para)
+                        return true;
+                }
+                return false;
+            },
+            submit : function(event){
+                var object = {};
+                object['_id'] = this.eachrow._id;
+                (new FormData(event.target)).forEach(function (value, key) {
+                        object[key] = value;
+                });
+                console.log("Form Data:",object);
+                Swal.fire({
+                    title: 'Are you sure you want to edit this record ?',
+                    showCancelButton: true,
+                    icon : 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/addOrChangeCallForProposal',
+                            object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Proposal edited successfully") {
+                        Swal.fire(
+                            {
+                                title : "Proposal was edited successfully!!",
+                                text : "The proposal was edited successfully!",
+                                showConfirmButton : true,
+                                confirmButtonText : 'Reload the page to see details!',
+                                allowOutsideClick : false,
+                                allowEscapeKey : false,
+                                allowEnterKey : false,
+                                icon :   'success'
+                            }
+                        ).then((res)=>{
+                            console.log(res);
+                            
+                            if(res.isConfirmed){
+                                location.reload();
+                            } 
+                        })
+                    }
+                    else if(result.value.data === "Proposal not found!!!"){
+                            Swal.fire(
+                            'Unable to process request',
+                            'Proposal Not found.',
+                            'error'
+                        )
+                    }
+                    else if(result.value.data === "Insufficient data !!"){
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Check all the fields of the form',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+        },
+        mounted: function(){
+            
+        }
+    })
+    Vue.component('collapsible-proposal',{
+        props:["eachrow",'agency-list', 'discipline-list'],
+        template:`
+            <li>
+                <div class="collapsible-header">
+                    <i class="material-icons purple-text text-darken-1">expand_more</i>{{ eachrow.name }}
+                </div>
+                <div class="collapsible-body">
+                    <div class="row">
+                        <div class="col s12 l6 "> <img src="assets/test.jpeg" alt="" class="responsive-img"> </div>
+                        <div class="col s12 l6"> <b>Description :</b> </div>
+                        <div class="col s12 l6">{{ eachrow.description }}</div>
+                        <div class="col s12 l6"> <b>Funding Agency :</b> </div>
+                        <div class="col s12 l6">
+                            <span v-for="agency in eachrow.fundingagency">
+                            {{ agency.name }}
+                            <span v-if="agency !== eachrow.fundingagency[eachrow.fundingagency.length-1]">
+                                ,
+                            </span>
+                            </span>
+                        </div>
+                        <div class="col s12 l6 "> <b>Discipline :</b> </div>
+                        <div class="col s12 l6 ">{{ eachrow.discipline.name }}
+                            <span v-for="discipline in eachrow.discipline">
+                                {{ discipline.name }}
+                                <span v-if="discipline !== eachrow.discipline[eachrow.discipline.length-1]">
+                                    ,
+                                </span>
+                            </span>
+                        </div>    
+                        <div class="col s12 l6 " style="align-centre;"><a :href="eachrow.link" class="btn waves-effect waves-purple white-text purple">Find More</a></div>
+        
+                    </div>
+                    <div class="row">
+                        <div class="col s12 l6"> <b>Published Date :</b>
+                            {{ (new Date(eachrow.publishdate)).getDate() + '/' + ((new Date(eachrow.publishdate)).getMonth()+1) + '/' + (new Date(eachrow.publishdate)).getFullYear() }}
+                        </div>
+                        <div class="col s12 l6 push-l2"><b>Last Date :</b>
+                            {{ (new Date(eachrow.lastdate)).getDate() + '/' + ((new Date(eachrow.lastdate)).getMonth()+1) + '/' + (new Date(eachrow.lastdate)).getFullYear() }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 l6">
+                            <a :href="'#'+eachrow._id+'form'" class="btn waves-effect waves-light orange darken-3 white-text left modal-trigger"><i
+                                    class="material-icons left">edit</i>Edit</a>
+                                    <modal-form-proposal :eachrow="eachrow" :agency-list="agencyList" :discipline-list="disciplineList"> </modal-form-proposal>
+                        </div>
+                        <div class="col s6 l6">
+                            <a @click.prevent="deletedata" href="#" class="btn waves-effect waves-light  right red darken-3"><i class="material-icons left">delete</i>Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `,
+        data(){
+            return{
+
+            }
+        },
+        methods:{
+            deletedata:function(){
+                Swal.fire({
+                    title: 'Are you sure you want to delete this proposal ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteCallForProposal', { _id: this.eachrow._id }).then((res) => {  return res  }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Proposal deleted !!",
+                                text: "The proposal was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Proposal not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Proposal Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select proposal properly',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });  
+            }
+        },
+        mounted:function(){
+            $('.modal').modal();
+            $('.collapsible').collapsible();
+            M.updateTextFields();
+            // $('.datepicker').datepicker({
+            //     container: 'body'
+            // })
+        },
+        
+    });
+</script>

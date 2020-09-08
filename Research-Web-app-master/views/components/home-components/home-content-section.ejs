@@ -1,0 +1,96 @@
+<script>
+    Vue.component('home-content',{
+        data : function (){
+            return {
+                noOfProposals : parseInt("<%= noOfProposals%>"),
+                noOfPapers : parseInt("<%= noOfPapers %>"),
+                noOfFellowship : parseInt("<%= noOfFellowships %>"),
+            }
+        },
+        template : `
+            <div class="section">
+                <div class="row first-box center">
+                    <div class="col s12 l6">
+                        <div class="container">
+                            <img src="assets/File searching.png" alt="" style="width:100%" class="img-responsive" />
+                            <h3>
+                                Research Gate Explore
+                            </h3>
+                            <p>New Way to find your research soon..</p>
+                        </div>
+                    </div>
+                    <br><br> <br>
+                    <div class="col s12 l5 " id="milestone-card">
+                        <div class="row" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="1500" onclick="location.href='/login'">
+                            <div class="col s12 l12">
+                                <div class="card hoverable">
+                                    <div class="card-title" ><i class="material-icons small center"
+                                            style="margin-top:5px;margin-right: 10px;">article</i>Call for Paper</div>
+                                    <div class="divider"></div>
+                                    <h5>
+                                        <div class="card-content" id="paper">
+                                            New Way to find your research soon..
+                                        </div>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="1500" onclick="location.href='/login'">
+                            <div class="col s12 l12">
+                                <div class="card hoverable">
+                                    <div class="card-title"><i class="material-icons small center"
+                                            style="margin-top:5px;margin-right: 10px;">emoji_people</i>Call for Proposal
+                                    </div>
+                                    <div class="divider"></div>
+                                    <h5>
+                                        <div class="card-content" id="proposal">
+                                            New Way to find your research soon..
+                                        </div>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="1500" onclick="location.href='/login'">
+                            <div class="col s12 l12">
+                                <div class="card hoverable">
+                                    <div class="card-title"><i class="material-icons small center"
+                                            style="margin-top:5px;margin-right: 10px;">school</i>Call for Fellowship
+                                    </div>
+                                    <div class="divider"></div>
+                                    <h5>
+                                        <div class="card-content" id="fellowship">
+                                        New Way to find your research soon..
+                                    </div>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        `,
+        mounted : function(){
+            const counter = function(obj,finish,startDelay,endDelay){
+                let start = 0;
+                let num = start;
+                let delay = startDelay;
+                let delayOffset = Math.floor((endDelay - startDelay) / (finish - start));
+                let timerStep = function() {
+                    if (num <= finish) { 
+                        obj.innerHTML=num + " +"; delay +=delayOffset; num +=1; 
+                        setTimeout(timerStep, delay); 
+                    } 
+                }
+                timerStep(); 
+            }
+            var proposal = document.querySelector('#proposal');
+            var paper = document.querySelector('#paper');
+            var fellowship = document.querySelector('#fellowship');
+            counter(proposal,this.noOfProposals,0,300);
+            counter(paper,this.noOfPapers,0,300);
+            counter(fellowship,this.noOfFellowship,0,300);
+        }
+    });
+</script>

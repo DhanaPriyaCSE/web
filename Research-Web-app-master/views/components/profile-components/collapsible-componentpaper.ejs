@@ -1,0 +1,102 @@
+<script>
+    Vue.component('collapsiblepaper',{
+        props : ['paper'],
+        template : `
+        <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>{{ paper.name }}</div>
+            <div class="collapsible-body">
+                <div class="row">
+                    
+                    <div class="col s12 l3"><img src="/assets/test.jpeg" alt="" class="responsive-img"></div>
+                    <div class="col s12 l9">Description : {{ paper.description }}</div>
+                    <div class="col s12 l9">Conference Venue : {{ paper.conferencevenue }}</div>
+                    <div class="col s12 l9">Research Area : {{ paper.typeofpaper.name }}</div>
+                    <div class="col s12 l9">Indexed In : {{ paper.indexedin.name }}</div>
+                    <div class="col s12 l9"><a :href="paper.link" class="btn waves-effect waves-purple white-text purple">Find More</a></div>
+                    
+                    
+                        
+                </div>
+                <div class="row">
+                    <div class="col s12 l6">Published Date : {{ (new Date(paper.publishdate)).getDate() + '/' + ((new Date(paper.publishdate)).getMonth()+1) + '/' + (new Date(paper.publishdate)).getFullYear() }}</div>
+                    <div class="col s12 l6 push-l2">Last Date  : {{ (new Date(paper.lastdatesubmission)).getDate() + '/' + ((new Date(paper.lastdatesubmission)).getMonth()+1) + '/' + (new Date(paper.lastdatesubmission)).getFullYear() }}</div>
+                </div>
+            </div>
+        </li>
+        `,
+        mounted :function(){
+            $('.collapsible').collapsible();
+        }
+    });
+    Vue.component('collapsible-paper',{
+        props:['search','typeofpaper','indexedin'],
+       data : function () {
+         return {
+             papers : [],
+             isLoaded : false
+         }  
+       },
+        template:`
+        <div class="container">
+        <div v-if="!isLoaded" class=" container center">
+        <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div v-else-if="filterPapers.length === 0" >
+            <div class=" row center">
+                <div class="col s6 l4 offset-l4 offset-s3">
+                    <img src="/assets/Not_Found.svg" class="responsive-img" />
+                </div>
+            </div>
+            <div class=" row center">
+                <div class="col s12 l12">
+                    <h5> No results.... </h5>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+        <ul class="collapsible"> 
+            <template v-for="paper in filterPapers" >
+                <collapsiblepaper :paper="paper"></collapsiblepaper>
+            </template>   
+        </ul>
+        </div>
+        </div>
+        `,
+        mounted(){
+            axios
+                    .get('/profile/getPapers')
+                    .then(response => {
+                    this.papers = response.data.papers
+                    
+                    })
+                    .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                    })
+                    .finally(() => this.isLoaded = true);
+        },
+        computed:{
+            filterPapers: function(){
+                var ele = this.papers.filter((para)=>{
+                    return para.name.toUpperCase().match(this.search.toUpperCase()) &&
+                    para.typeofpaper.name.toUpperCase().match(this.typeofpaper.toUpperCase()) &&
+                    para.indexedin.name.toUpperCase().match(this.indexedin.toUpperCase());
+                });
+                document.getElementById('paperbadge').innerText=ele.length;
+                return ele;
+            }
+        }
+    });
+</script>

@@ -1,0 +1,184 @@
+<script>
+
+    Vue.component('carousel',{
+        prop :[],
+        
+        template : `
+            <div id="main-carousel" class="carousel carousel-slider ">
+            
+                <div class="carousel-item main-carousel" href="#one!">
+
+                    <br class="hide-on-small-only"><br class="hide-on-small-only"> <br class="hide-on-small-only">
+                    <div class="row">
+                        <div class="col s12 l6">
+                <div class="card hoverable">
+                    <div class="card-content puple darken-1 ">
+                        <span class="card-title">New Call For Proposals</span>
+                        <% if(proposalDetails.id != null) {
+                             %> 
+                            <div class="row">
+                            <div class="col s12 19" >Name: <%= proposalDetails.name %></div>
+                            <div class="col s12 l9">Description : <%= proposalDetails.description %> </div>
+                            <div class="col s12 l9">Funding Agency : 
+                                <% for(var i=0;i<proposalDetails.fundingagency.length;i++){  %>
+                                <span> <%= proposalDetails.fundingagency[i].name %> </span>
+                                <% if(i !== proposalDetails.fundingagency.length-1){ %>
+                                    <span> , </span>
+                                <%
+                                    }
+                                }   
+                                %>
+                            </div>
+                            <div class="col s12 l9">Discipline :  
+                                <% for(var i=0;i<proposalDetails.discipline.length;i++){  %>
+                                <span> <%= proposalDetails.discipline[i].name %> </span>
+                                <% if(i !== proposalDetails.discipline.length-1){
+                                    %>
+                                    <span> , </span>
+                                <%
+                                    }
+                                }   
+                                %>
+                            </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 l6">Published Date : <%= (new Date(proposalDetails.publishdate)).getDate() + '/' + ((new Date(proposalDetails.publishdate)).getMonth()+1) + '/' + (new Date(proposalDetails.publishdate)).getFullYear() %></div>
+                                <div class="col s12 l6 push-l2">Last Date :  <%= (new Date(proposalDetails.lastdate)).getDate() + '/' + ((new Date(proposalDetails.lastdate)).getMonth()+1) + '/' + (new Date(proposalDetails.lastdate)).getFullYear() %> </div>
+                            </div>
+                    <%  } 
+                    else{ 
+                        console.log("No hello") %>
+                        <span> No Proposals are currently availble <span> 
+                   <% } %>
+                </div>
+                <div class="card-action">
+                    <a href="/login" class="btn waves-effect waves-purple purple-text white">Find More >></a>
+                </div>
+            </div>
+            </div>
+            <div class="col s12 l6 hide-on-med-and-down">
+                <div class="container">
+                    <img src="assets/science.svg" class="responsive-img" alt="" srcset="">
+                </div>
+            </div>                              
+                    </div>
+                </div>
+                <div class="carousel-item main-carousel" href="#two!">
+                    <br class="hide-on-small-only"><br class="hide-on-small-only"> <br class="hide-on-small-only">
+                    <div class="row">
+                        <div class="col s12 l6">
+
+                            <div class="card hoverable">
+                                <div class="card-content puple darken-1 ">
+                                    <span class="card-title">New Call For Papers</span>
+                            <% if(paperDetails.id != null) {
+                             %> 
+                                    <div class="row">
+                                        <div class="col s12 19" >Name: <%= paperDetails.name %></div>
+                        <div class="col s12 l9">Description : <%= paperDetails.description %> </div>
+                        <div class="col s12 l9">Conference Venue : <%= paperDetails.conferencevenue %> </div>
+                        <div class="col s12 l9">Research Area : <%= paperDetails.typeofpaper.name %> </div>
+                        <div class="col s12 l9">Indexed In : <%= paperDetails.indexedin.name %> </div>
+        
+        
+                    </div>
+                    <div class="row">
+                        <div class="col s12 l6">Published Date : <%= (new Date(paperDetails.publishdate)).getDate() + '/' + ((new Date(paperDetails.publishdate)).getMonth()+1) + '/' + (new Date(paperDetails.publishdate)).getFullYear() %></div>
+                        <div class="col s12 l6 push-l2">Last Date :  <%= (new Date(paperDetails.lastdatesubmission)).getDate() + '/' + ((new Date(paperDetails.lastdatesubmission)).getMonth()+1) + '/' + (new Date(paperDetails.lastdatesubmission)).getFullYear() %> </div>
+                    </div>
+                    <%  } 
+                    else{ 
+                        console.log("No hello") %>
+                        <span> No Papers are currently availble <span> 
+                   <% } %>
+                                </div>
+                                <div class="card-action">
+                                    <a href="/login" class="btn waves-effect waves-purple purple-text white">Find More >></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 l6 hide-on-med-and-down">
+                            <div class="container">
+                                <img src="assets/file_searching.svg" class="responsive-img" alt="" srcset="">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div class="carousel-item main-carousel" href="#four!">
+                    <br class="hide-on-small-only"><br class="hide-on-small-only"> <br class="hide-on-small-only">
+                    <div class="row">
+                        <div class="col s12 l6">
+
+                            <div class="card hoverable">
+                                <div class="card-content puple darken-1 ">
+                                    <span class="card-title">New Call for Fellowship</span>
+                                    <% if(fellowShipDetails.id != null) {
+                             %> 
+                                <div class="row">
+                                    <div class="col s12 19" >Research Topic: <%= fellowShipDetails.researchtopic %></div>
+                        <div class="col s12 l9">Description : <%= fellowShipDetails.description %> </div>
+                        <div class="col s12 l9">Type Of Fellowship : <%= fellowShipDetails.typeoffellowship.name %> </div>
+                        <div class="col s12 l9">University : <%= fellowShipDetails.university.name %> </div>
+        
+        
+                    </div>
+                    <div class="row">
+                        <div class="col s12 l6">Published Date : <%= (new Date(fellowShipDetails.publishdate)).getDate() + '/' + ((new Date(fellowShipDetails.publishdate)).getMonth()+1) + '/' + (new Date(fellowShipDetails.publishdate)).getFullYear() %></div>
+                        <div class="col s12 l6 push-l2">Last Date :  <%= (new Date(fellowShipDetails.lastdateapplication)).getDate() + '/' + ((new Date(fellowShipDetails.lastdateapplication)).getMonth()+1) + '/' + (new Date(fellowShipDetails.lastdateapplication)).getFullYear() %> </div>
+                    </div>
+                    <%  } 
+                    else{ 
+                        console.log("No hello") %>
+                        <span> No Fellowships are currently availble <span> 
+                   <% } %>
+                                </div>
+                                <div class="card-action">
+                                    <a href="/login" class="btn waves-effect waves-purple purple-text white">Find More >></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col s12 l6 hide-on-med-and-down">
+                            <div class="container">
+                                <img src="assets/articles.svg" class="responsive-img" alt="" srcset="">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        `,
+        mounted:
+                    
+            function(){
+            
+            $('.carousel.carousel-slider').carousel({
+            interval: 5000,
+            indicators: true,
+            fullWidth: true
+            }).height(() => {
+            if (screen.width < 670) { 
+                return screen.height - Math.floor(screen.height / 2); } 
+                else if (screen.width> 992 && screen.width < 1021) { return screen.height - Math.floor(screen.height / 2 + 100); } 
+                else { 
+                    return screen.height - Math.floor(screen.height / 3); } }); 
+                    $(window).resize(function(){
+                        $('.carousel.carousel-slider').carousel({ interval: 5000, indicators: true, fullWidth: true
+                        }).height(()=> {
+                        if (screen.width < 670) { return screen.height - Math.floor(screen.height / 2); } 
+                        else if (screen.width> 992 && screen.width < 1021) 
+                        { return screen.height - Math.floor(screen.height / 2 + 100); } 
+                        else { return screen.height - Math.floor(screen.height / 3); } 
+                        }); 
+                    });
+                    setInterval(()=>{
+                    var ele = document.querySelector('#main-carousel');
+                    var cor = M.Carousel.getInstance(ele);
+                    cor.next();
+                    },5000);
+               
+            },
+
+    });
+</script>

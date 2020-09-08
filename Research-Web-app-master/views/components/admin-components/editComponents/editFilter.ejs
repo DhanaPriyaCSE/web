@@ -1,0 +1,899 @@
+<script>
+Vue.component('filter-modify',{
+    props:['discipline-list', 'agency-list', 'typeofpaper-list', 'indexedin-list', 'typeoffellowship-list', 'university-list'],
+    data:function(){
+        return{
+            isLoaded:true,
+            selectedfilter:'',
+            search:'',
+        }
+    },
+    template:`
+    <div>
+        <div v-if="!isLoaded" class=" container center">
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else>  
+            <div class="row">
+                <form class="col s12">
+                    <div class="input-field col s12 l12">
+                        <i class="material-icons prefix">search</i>
+                        <input id="icon_prefix" type="text" class="validate" v-model="search">
+                        <label for="icon_prefix">Search</label>
+                    </div>
+                </form>
+                <div class="input-field col s12 l6">
+                    <select required v-model="selectedfilter">
+                        <option value="" disabled selected>Select a class</option>
+                        <option value="university">Degree</option>
+                        <option value="discipline">Discipline for Proposal</option>
+                        <option value="typeoffellowship">Discipline for Fellowship</option>
+                        <option value="fundingagency">Funding Agency</option>
+                        <option value="indexedin">Indexed In</option>
+                        <option value="typeofpaper">Research Area</option>
+                    </select>
+                    <label class="">Filter Type</label>
+                </div>
+            </div>
+            <div v-if="filtereddata.length === 0">
+                <div class=" row center">
+                    <div class="col s6 l4 offset-l4 offset-s3">
+                        <img src="/assets/Not_Found.svg" class="responsive-img" />
+                    </div>
+                </div>
+                <div class=" row center">
+                    <div class="col s12 l12">
+                        <h5> Please change the filter or search keywords.. </h5>
+                    </div>
+                </div>
+            </div>
+            <ul class="collection" v-else>
+                <template v-for = "data in filtereddata">
+                    <filter-collection :dataList="data" :dataType="selectedfilter"></filter-collection>
+                </template>
+            </ul>
+        </div>
+    </div>
+    `,mounted:function(){
+        $('select').formSelect();
+    },
+    computed:{
+        filtereddata:function(){
+        //console.log(this.disciplineList);
+        
+            var data=[];
+            if(this.selectedfilter==="discipline"){
+                data=this.disciplineList;
+            }
+            else if (this.selectedfilter === "fundingagency") {
+                data = this.agencyList;
+            }
+            else if (this.selectedfilter === "indexedin") {
+                data = this.indexedinList;
+            }
+            else if (this.selectedfilter === "typeoffellowship") {
+                data = this.typeoffellowshipList;
+            }
+            else if (this.selectedfilter === "typeofpaper") {
+                data = this.typeofpaperList;
+            }
+            else if (this.selectedfilter === "university") {
+                data = this.universityList;
+            }
+            var ele = data.filter((para) => {
+                return para.name.toUpperCase().match(this.search.toUpperCase());
+            });
+            //document.getElementById('fellowshipbadge').innerText = ele.length;
+            return ele;
+        }
+    }
+});
+
+Vue.component('filter-collection',{
+    props:['data-list','data-type'],
+    template:`
+        <li class="collection-item avatar">
+            <span class="title"><b>Filter Name :</b></span>
+          <p> {{ dataList.name }} </p>
+            <div class="secondary-content">
+                <form  v-on:submit.prevent="editclick" style="float:left;">
+                    <input type="hidden" :value="dataList._id" name="_id">
+                    <button type="submit"  class="btn-flat orange-text white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Demote">edit</i></button>
+                </form>
+                <form  v-on:submit.prevent="deleteclick" style="float:right;">
+                    <button type="submit" class="btn-flat red-text white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Delete">delete</i></button>
+                </form>
+            </div>
+        </li>
+    `,
+    methods:{
+        editclick:function(){
+            var object = {};
+            (new FormData(event.target)).forEach(function (value, key) {
+                object[key] = value;
+            });
+            console.log(object);
+            if (this.dataType === "discipline") {
+                Swal.fire({
+                    title: 'New discipline name',
+                    input: 'text',
+                    inputValue : this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name']=login;
+                        //console.log(object);
+                        return axios.post('/profile/updateDiscipline', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Discipline updated !!",
+                                text: "The discipline was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Discipline not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Discipline Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty dicipline',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+            else if (this.dataType === "fundingagency") {
+                Swal.fire({
+                    title: 'New funding agency name',
+                    input: 'text',
+                    inputValue: this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name'] = login;
+                        //console.log(object);
+                        return axios.post('/profile/updateFundingagency', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Funding Agency updated !!",
+                                text: "The funding agency was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Fundingagency not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Funding Agency Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty funding agency',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+            else if (this.dataType === "indexedin") {
+                Swal.fire({
+                    title: 'New indexed in name',
+                    input: 'text',
+                    inputValue: this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name'] = login;
+                        //console.log(object);
+                        return axios.post('/profile/updateIndexedin', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Indexedin updated !!",
+                                text: "The Indexed In was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Indexedin not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Indexed In Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty Indexed in',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+            else if (this.dataType === "typeoffellowship") {
+                Swal.fire({
+                    title: 'New type of fellowship name',
+                    input: 'text',
+                    inputValue: this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name'] = login;
+                        //console.log(object);
+                        return axios.post('/profile/updateTypeoffellowship', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Type of Fellowship updated !!",
+                                text: "The Type of Fellowship was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Typeoffellowship not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Type of Fellowship Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty Type of Fellowship',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+            else if (this.dataType === "typeofpaper") {
+                Swal.fire({
+                    title: 'New type of paper name',
+                    input: 'text',
+                    inputValue: this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name'] = login;
+                        //console.log(object);
+                        return axios.post('/profile/updateTypeofpaper', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Research Area updated !!",
+                                text: "The Research Area was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Typeofpaper not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Research Area Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty Research Area',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+            else if (this.dataType === "university") {
+                Swal.fire({
+                    title: 'New type of university name',
+                    input: 'text',
+                    inputValue: this.dataList.name,
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        object['name'] = login;
+                        //console.log(object);
+                        return axios.post('/profile/updateUniversity', object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.value.data === "Updated Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "University updated !!",
+                                text: "The University was updated successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "University not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'University Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Enter a non empty University',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                })
+            }
+        },
+        deleteclick:function(){
+            if(this.dataType==="discipline"){
+                Swal.fire({
+                    title: 'Are you sure you want to delete this discipline ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteDiscipline', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Discipline deleted !!",
+                                text: "The discipline was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Discipline not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Discipline Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a discipline properly',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+            else if (this.dataType === "fundingagency") {
+                Swal.fire({
+                    title: 'Are you sure you want to delete this funding agency (you will lose $$) ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteFundingagency', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Funding Agency deleted !!",
+                                text: "The funding agency was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Fundingagency not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Funding Agency Not found.',
+                            'error'
+                        )
+                    }
+                     else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a funding agency properly',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+            else if (this.dataType === "indexedin") {
+                Swal.fire({
+                    title: 'Are you sure you want to delete this indexed in ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteIndexedin', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Indexed In deleted !!",
+                                text: "The indexed in was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Indexedin not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Indexed In Not found.',
+                            'error'
+                        )
+                    }
+                     else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a indexed in properly',
+                            'warning'
+                        )
+                    }
+    
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+            else if (this.dataType === "typeoffellowship") {
+                Swal.fire({
+                    title: 'Are you sure you want to delete this type of fellowship ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteTypeoffellowship', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Type Of Fellowship deleted !!",
+                                text: "The type of fellowship was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Typeoffellowship not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Type of Fellowship Not found.',
+                            'error'
+                        )
+                    }
+                     else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a type of fellowship properly',
+                            'warning'
+                        )
+                    }
+                    
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+            else if (this.dataType === "typeofpaper") {
+                Swal.fire({
+                    title: 'Are you sure you want to delete this type of paper ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteTypeofpaper', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "Research Area deleted !!",
+                                text: "The type of paper was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "Typeofpaper not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Type of paper Not found.',
+                            'error'
+                        )
+                    }
+                     else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a type of papers properly',
+                            'warning'
+                        )
+                    }
+                    
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+            else if (this.dataType === "university") {
+                Swal.fire({
+                    title: 'Are you sure you want to delete this university ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/deleteUniversity', { _id: this.dataList._id }).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Deleted Successfully!!") {
+                        Swal.fire(
+                            {
+                                title: "University deleted !!",
+                                text: "The university was deleted successfully.",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see changes',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+
+                        })
+                    }
+                    else if (result.value.data === "University not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'University Not found.',
+                            'error'
+                        )
+                    }
+                     else if (result.value.data === "cannot delete!!!") {
+                        Swal.fire(
+                            'Cannot Delete!!',
+                            'The filter is in use ',
+                            'warning'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Select a university properly',
+                            'warning'
+                        )
+                    }
+                    
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+        }
+    }
+})
+</script>

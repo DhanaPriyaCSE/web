@@ -1,0 +1,25 @@
+.con {
+  margin: 5px auto;
+}
+.first-box img {
+  width: 250px;
+  height: 250px;
+  border-radius: 20px;
+}
+.big-text {
+  font-size: 52px;
+  margin: 20px 0;
+  color: #4db6ac;
+  font-style: "Montserrat-bold", sans-serif;
+}
+.con p {
+  color: #bdbdbd;
+  font-size: 20px;
+}
+.slider {
+  width: 100%;
+  position: absolute;
+}
+.carousel-item {
+  background-color: #4db6ac;
+}

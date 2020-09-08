@@ -1,0 +1,29 @@
+{
+  "name": "samplelogin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "engines": {
+    "node": "10.x"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Manav Nair",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "cookie-session": "^1.4.0",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "heroku-ssl-redirect": "0.0.4",
+    "mongoose": "^5.9.18",
+    "node": "^14.8.0",
+    "nodemon": "^2.0.4",
+    "passport": "^0.4.1",
+    "passport-custom": "^1.1.1",
+    "passport-google-oauth20": "^2.0.0"
+  }
+}

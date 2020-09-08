@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <%- include('partials/css.ejs')%>
+</head>
+<style>
+    b{
+      color:#4a148c;
+    }
+  </style>
+  <body>
+    <!-- navbar -->
+    <div id="adminmain">
+    <header>
+      <nav-admin></nav-admin>
+    </header>
+
+    <br>
+    <div class="container">
+      <div id="existing-proposal">  
+        <proposal-existing :fundingagency-list="FundingAgencyList" :discipline-list="DisciplineList"></admin-existing>
+      </div>
+      <div id="existing-paper">
+        <paper-existing :papertype-list="TypeOfPaperList" :indexedin-list="IndexedInList"></paper-existing>
+      </div>
+      <div id="existing-fellowship">
+        <fellowship-existing :fellowshiptype-list="TypeOfFellowshipList" :university-list="UniversityList"></fellowship-existing>
+      </div>
+      <div id="existing-filter">
+        <filter-modify :agency-list="FundingAgencyList" :discipline-list="DisciplineList" :typeofpaper-list="TypeOfPaperList" :indexedin-list="IndexedInList" :typeoffellowship-list="TypeOfFellowshipList" :university-list="UniversityList"></filter-modify>
+      </div>
+      <div id="new">
+        <admin-new :agency-list="FundingAgencyList" :discipline-list="DisciplineList" :typeofpaper-list="TypeOfPaperList" :indexedin-list="IndexedInList" :typeoffellowship-list="TypeOfFellowshipList" :university-list="UniversityList"></admin-new>
+      </div>
+      <div id="admin">
+        <div class="row">
+          <div class="col s12 l6">
+            <div class="input-field col s12 l6">
+              <select v-model="selectuser">
+                <option value="" selected>All Users</option>
+                <option value="true" >Administrator</option>
+                <option value="false">Regular Users</option>
+              </select>
+              <label class="purple-text text-darken-1">User Type</label>
+            </div>
+          </div>
+          <div class="col s12 l6">
+            <form>
+              <div class="input-field col s12 l12"  @click="user_select">
+                <i class="material-icons prefix"  @click="user_select">search</i>
+                <input id="usersearch" type="text" v-model="searchuser"  type="text" class="validate">
+                <label for="icon_prefix"  @click="user_select">Search</label>
+              </div>
+            </form>
+          </div>
+        </div>
+        <admin-manage :search="searchuser" :select="selectuser"></admin-manage>
+      </div>
+    </div>
+    <footer-end></footer-end>
+    </div>
+    <div class="modal modal-fixed-footer" id="fellowshipmodal">
+      <form id="fellowshipeditform" @submit.prevent="submit">
+        <div class="row modal-content">
+          <div class="container">
+            <div class="col s12 l12 input-field">
+              <input id="title" name="researchtopic" type="text" :value="formeachrow.researchtopic">
+              <label for="title">Research Topic</label>
+            </div>
+            <div class="col s12 l12 input-field">
+              <input id="description" name="description" type="text" :value="formeachrow.description">
+              <label for="description">Description</label>
+            </div>
+            <div class="input-field col s12 l12">
+              <select name="typeoffellowshipId" required>
+                <option value="" selected disabled>Select Degree</option>
+                <template v-for="fellowship in fellowshiptypeList">
+                  <option :value="fellowship._id" :selected="fellowship.name === formeachrow.typeoffellowship.name">
+                    {{ fellowship.name }}</option>
+                </template>
+              </select>
+              <label class="">Degree</label>
+            </div>
+            <div class="input-field col s12 l12">
+              <select name="universityId" required>
+                <option value="" selected disabled>Select Discipline</option>
+                <template v-for="university in universityList">
+                  <option :value="university._id" :selected="university.name === formeachrow.university.name">
+                    {{ university.name }}</option>
+                </template>
+              </select>
+              <label class="">Discipline</label>
+            </div>
+            <div class="col s12 l12 input-field">
+              <textarea id="file" name="link" type="text" class="materialize-textarea" :value="formeachrow.link"></textarea>
+              <label for="file">File</label>
+            </div>
+            <div class="col s12 l6">
+              <input type="text" name="publishdate" class="datepicker" id="sdate"
+                :value="(new Date(formeachrow.publishdate)).getFullYear() + '-' + ((new Date(formeachrow.publishdate)).getMonth()+1) + '-' + (new Date(formeachrow.publishdate)).getDate()">
+              <label for="sdate">Published Date</label>
+            </div>
+            <div class="col s12 l6">
+              <input type="text" name="lastdateapplication" class="datepicker" id="edate"
+                :value="(new Date(formeachrow.lastdateapplication)).getFullYear() + '-' + ((new Date(formeachrow.lastdateapplication)).getMonth()+1) + '-' + (new Date(formeachrow.lastdateapplication)).getDate()">
+              <label for="edate">Last Date of Application</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a href="javascript:void(0)" class="btn-flat white-text red darken-3 modal-close"><i
+              class="material-icons left">close</i> Cancel</a>
+          <button type="submit" class="btn-flat white-text green modal-close"><i class="material-icons left">save</i> Save
+            Changes</button>
+        </div>
+    
+      </form>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <%- include('./partials/js.ejs')%>
+    <%- include('./components/admin-components/editComponents/editFilter.ejs')%>
+    <%- include('./components/admin-components/editComponents/editExistingProposal.ejs')%>
+    <%- include('./components/admin-components/editComponents/editExistingPaper.ejs')%>
+    <%- include('./components/admin-components/editComponents/editExistingFellow.ejs')%>
+    <%- include('./components/admin-components/addComponents/addCall.ejs')%>
+    <%- include('./components/admin-components/addComponents/addFilter.ejs')%>
+    <%- include('./components/admin-components/addComponents/addProposal.ejs')%>
+    <%- include('./components/admin-components/addComponents/addPaper.ejs')%>
+    <%- include('./components/admin-components/addComponents/addFellowship.ejs')%>
+    <%- include('./partials/footer.ejs')%>
+    <%- include('./components/admin-components/manageUserComponents/manageUser.ejs')%>
+    <%- include('./components/admin-components/navComponent/adminNav.ejs')%>
+    <script>
+      $(document).ready(function(){
+        $('.sidenav').sidenav();
+        $('.tabs').tabs();
+        $('.collapsible').collapsible();
+        $('select').formSelect();
+        $('.modal').modal();
+        $('.datepicker').datepicker({
+          format: "yyyy-mm-dd",
+          container: 'body'
+        });
+      });
+    </script>
+  </body>
+  </html>

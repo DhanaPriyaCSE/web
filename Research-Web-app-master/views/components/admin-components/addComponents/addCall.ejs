@@ -1,0 +1,24 @@
+<script>
+    Vue.component('admin-new', {
+        props: ['discipline-list', 'agency-list', 'typeofpaper-list', 'indexedin-list', 'typeoffellowship-list', 'university-list'],
+        data: function() {
+            return {
+                isDisciplineLoaded: false,
+                isMinistryLoaded: false,
+            }
+        },
+        template: `
+        <div class="container">
+          <div class="row">
+              <add-filter></add-filter>
+              <add-proposal :discipline-list="disciplineList" :agency-list="agencyList"></add-proposal>
+              <add-paper :typeofpaper-list="typeofpaperList" :indexedin-list="indexedinList"></add-paper>
+              <add-fellowship :typeoffellowship-list="typeoffellowshipList" :university-list="universityList"></add-fellowship>
+          </div>
+        </div>
+        `,
+        mounted: function() {
+            $('.collapsible').collapsible();
+        }
+    });
+</script>

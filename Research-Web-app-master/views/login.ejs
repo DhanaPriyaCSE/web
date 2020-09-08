@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <%- include('partials/css.ejs')%>
+  </head>
+  <body>
+    <header>
+      <div id = "loginmain" >
+        <header>
+            <nav-login></nav-login>
+        </header>
+        <login-content></login-content>
+        <footer-end></footer-end>
+    </div>
+    </header>
+    
+    <%- include('./partials/js.ejs')%>
+    <%- include('./components/login-components/login-content.ejs')%>
+    <%- include('./partials/footer.ejs')%>
+    <%- include('./components/login-components/login-nav.ejs')%>
+  </body>
+</html>

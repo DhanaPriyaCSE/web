@@ -1,0 +1,352 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <!--Import Google Icon Font-->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <link rel="stylesheet" href="sweetalert2.min.css">
+  <title>Dashboard</title>
+  <style>
+    .datepicker{
+      height: 100vh;
+    }
+    b{
+      color:#4a148c;
+    }
+  </style>
+</head>
+<body>
+  <!-- navbar -->
+  <header>
+    <nav class="nav-extended purple darken-1">
+        <div class="nav-wrapper purple darken-1">
+            <div class="container">
+                <a href="#" class="brand-logo">Logo</a>
+                <a href="#" class="sidenav-trigger" data-target="mobile-links">
+                    <i class="material-icons">menu</i>
+                </a>
+                
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Login</a></li>
+                </ul>
+
+
+                <!-- <li class="avatar center" style="margin-top:0%">
+                  <a href="#" class="btn-flat purple darken-1 tooltipped" data-position="bottom"
+                    data-tooltip="Logged in as: <%= user.Name%><br> <%= user.Email%>">
+                    <div class="container">
+                      <img src="<%=user.Thumbnail%>" class="responsive-img circle" style="width:50px;" /> </div>
+                  </a>
+                </li>
+                </ul>
+                </div>
+                <div class="mobileshow">
+                  <ul class="right hide-on-large-only">
+                    <li>
+                      <a class="btn waves-effect waves-light purple darken-1 white-text " href="/auth/logout" id="logout-link">
+                        <i class="material-icons left white-text">power_settings_new</i>Logout</a>
+                    </li> -->
+
+
+            </div>
+        </div>
+        <div class="nav-content container">
+            <ul class="tabs purple darken-1">
+                <a class="dropdown-trigger btn" data-target="dropdown1">Modify</a>
+            </ul>
+            <ul id="dropdown1">
+              <li class="tab">
+                <a href="#existing" class="white-text">
+                  Modify Existing
+                </a>
+              </li>
+              <li class="tab">
+                <a href="#new" class="white-text">
+                  Add new
+                </a>
+              </li>
+              <li class="tab">
+                <a href="#admin" class="white-text">
+                  admin access
+                </a>
+              </li>
+            </ul>
+        </div>
+    </nav>
+    <ul class="sidenav purple darken-1" id="mobile-links">
+      <li><a href="#" class="white-text">About</a></li>
+      <li><a href="#" class="white-text">Login</a></li>
+    </ul>
+  </header>
+  <br>
+  <div class="container">
+    <div id="existing">
+      <div class="row">
+        <form class="col s12">
+          <div class="input-field col s12 l12">
+            <i class="material-icons prefix">search</i>
+            <input id="icon_prefix" type="text" class="validate">
+            <label for="icon_prefix">Search</label>
+          </div>
+        </form>
+          <div class="input-field col s12 l4">
+              <select>
+                  <option value="1" selected>Call for Proposal</option>
+                  <option value="2">Call for Paper</option>
+                  <option value="3">Call for Fellowship</option>
+              </select>
+              <label class="purple-text text-darken-1">Type</label>
+          </div>
+          <div class="input-field col s12 l4">
+              <select>
+                  <option value="" disabled selected>Filter By Discipline</option>
+                  <option value="1">Option 1</option>
+                  <option value="2">Option 2</option>
+                  <option value="3">Option 3</option>
+              </select>
+              <label class="purple-text text-darken-1">Discipline</label>
+          </div>
+          <div class="input-field col s12 l4">
+            <select>
+              <option value="" disabled selected>Filter By Ministry</option>
+              <option value="1">Option 1</option>
+              <option value="2">Option 2</option>
+              <option value="3">Option 3</option>
+            </select>
+            <label class="purple-text text-darken-1">Ministry</label>
+          </div>
+      </div>  
+      <div class="container">
+        <ul class="collapsible">
+          <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>{{ paper.name }}
+            </div>
+            <div class="collapsible-body">
+              <div class="row">
+        
+                <div class="col s12 l4"><img src="test.jpeg" alt="" class="responsive-img"></div>
+                <div class="row">
+                  <div class="col s12 l8"><b>Description :</b></div>
+                  <div class="col s12 l8">{{ paper.description }}</div>
+                  <div class="col s12 l8"><b>Ministry :</b></div>
+                  <div class="col s12 l8">{{ paper.ministry.name }}</div>
+                  <div class="col s12 l8"><b>Discipline :</b></div>
+                  <div class="col s12 l8">{{ paper.discipline.name }}</div>
+                </div>
+        
+              </div>
+              <div class="row">
+                <div class="col s12 l6"><b>Published Date :</b>
+                  <!--{{ (new Date(paper.publishdate)).getDate() + '/' + ((new Date(paper.publishdate)).getMonth()+1) + '/' + (new Date(paper.publishdate)).getFullYear() }}-->
+                </div>
+                <div class="col s12 l6 push-l2"><b>Last Date :</b>
+                  <!--{{ (new Date(paper.lastdate)).getDate() + '/' + ((new Date(paper.lastdate)).getMonth()+1) + '/' + (new Date(paper.lastdate)).getFullYear() }}-->
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12 l12">
+                  <a href="#edit" class="btn-floating orange darken-3 modal-trigger"><i class="material-icons ">edit</i></a>
+                  <a href="#" class="btn-floating red darken-3"><i class="material-icons ">delete</i></a>
+                  <form action="">
+                  <div class="modal modal-fixed-footer" id="edit">
+                      <div class="row modal-content">
+                        <div class="container">
+                          <div class="col s12 l12 input-field">
+                            <input id="title" type="text" value="bindit">
+                            <label for="title">Title</label>
+                          </div>
+                          <div class="col s12 l12 input-field">
+                            <textarea id="desc" class="materialize-textarea">{{ paper.description }}</textarea>
+                            <label for="desc">Description</label>
+                          </div>
+                          <div class="input-field col s12 l12">
+                            <select>
+                              <option value="" disabled selected>Filter By Discipline</option>
+                              <option value="1">Option 1</option>
+                              <option value="2">Option 2</option>
+                              <option value="3">Option 3</option>
+                            </select>
+                            <label class="purple-text text-darken-1">Discipline</label>
+                          </div>
+                          <div class="input-field col s12 l12">
+                            <select>
+                              <option value="" disabled selected>Filter By Ministry</option>
+                              <option value="1">Option 1</option>
+                              <option value="2">Option 2</option>
+                              <option value="3">Option 3</option>
+                            </select>
+                            <label class="purple-text text-darken-1">Ministry</label>
+                          </div>
+                          <div class="col s12 l6">
+                            <input type="text" class="datepicker" id="sdate">
+                            <label for="sdate">Published Date</label>
+                          </div>
+                          <div class="col s12 l6">
+                            <input type="text" class="datepicker" id="edate">
+                            <label for="edate">Last Date</label>
+                          </div>
+                        </div>
+                      </div>
+                    <div class="modal-footer">
+                      <a href="#!" class="btn-floating red darken-3"><i class="material-icons modal-close">cancel</i></a>
+                      <a href="#!" class="btn-floating green"><i class="material-icons ">save</i></a>
+                    </div>
+                  </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+  </div>
+    <div id="new">
+      <div class="container">
+        <ul class="collapsible">
+          <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>Add Data</div>
+            <div class="collapsible-body">
+              <form action="#" class="row">
+                <div class="col s12 l12 input-field">
+                  <input id="title" type="text">
+                  <label for="title">Title</label>
+                </div>
+                <div class="col s12 l12 input-field">
+                  <textarea id="desc" class="materialize-textarea"></textarea>
+                  <label for="desc">Description</label>
+                </div>
+                <div class="col s12 l12 input-field">
+                  <input id="ministry" type="text">
+                  <label for="ministry">Ministry</label>
+                </div>
+                <div class="col s12 l12 input-field">
+                  <input id="discipline" type="text">
+                  <label for="discipline">Discipline</label>
+                </div>
+                <div class="col s12 l6 input-field">
+                  <input type="text" class="datepicker" id="sdate">
+                  <label for="sdate">Published Date</label>
+                </div>
+                <div class="col s12 l6 input-field">
+                  <input type="text" class="datepicker" id="edate">
+                  <label for="edate">Last Date</label>
+                </div>
+                <div class="col s12 l4">
+                  <label>
+                    <input name="data" type="radio" value="proposal" />
+                    <span>Call for Proposal</span>
+                  </label>
+                </div>
+                <div class="col s12 l4">
+                  <label>
+                    <input name="data" type="radio" value="fellowship" />
+                    <span>Call for Fellowship</span>
+                  </label>
+                </div>
+                <div class="col s12 l4">
+                  <label>
+                    <input name="data" type="radio" value="paper" />
+                    <span>Call for Paper</span>
+                  </label>
+                </div>
+                <div class="col s12 l12 center" style="padding-top: 3%;">
+                  <a href="#" class="btn center">SUBMIT</a>
+                </div>
+              </form>
+            </div>
+          </li>
+          <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>Add Filter</div>
+            <div class="collapsible-body">
+               <form action="" class="row">
+                <div class="col s12 l12 input-field">
+                  <input id="filter" type="text">
+                  <label for="filter">Filter</label>
+                </div>
+                <div class="col s12 l6">
+                  <label>
+                    <input name="data" type="radio" value="ministry" />
+                    <span>Ministry</span>
+                  </label>
+                </div>
+                <div class="col s12 l6">
+                  <label>
+                    <input name="data" type="radio" value="discipline" />
+                    <span>Discipline</span>
+                  </label>
+                </div>
+                <div class="col s12 l12 center" style="padding-top: 3%;">
+                  <a href="#" class="btn center">SUBMIT</a>
+                </div>
+               </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+          
+      
+    </div>
+    <div id="admin">
+      <div class="row">
+        <div class="col s12 l6">
+          <div class="input-field col s12 l6">
+            <select>
+                <option value="1" selected>Administrator</option>
+                <option value="2">Regular Users</option>
+            </select>
+            <label class="purple-text text-darken-1">User Type</label>
+        </div>
+        </div>
+        <div class="col s12 l6">
+          <form>
+            <div class="input-field col s12 l12">
+                <i class="material-icons prefix">search</i>
+                <input id="icon_prefix" type="text" class="validate">
+                <label for="icon_prefix">Search</label>
+            </div>
+        </form>
+        </div>
+      </div>
+      <div class="container">
+        <ul class="collapsible">
+          <li>
+              <div class="collapsible-header" style="justify-content: space-between;">Magdumidtha Karthikeyan<i class="material-icons purple-text text-darken-1">expand_more</i></div>
+              <div class="collapsible-body">
+                  <div class="row">
+                      <div class="col s12 l7">MadhumitaKarthikeyan1969@gmail.com</div>
+                      <div class="col s12 l5 center">
+                        <a href="#" class="btn orange darkern-3">DEMOTE</a>
+                        <a href="#" class="btn red darkern-3">DELETE</a>
+                      </div>
+                  </div>
+              </div>
+          </li>
+      </ul>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+  <script>
+    
+    $(document).ready(function(){
+      $('.sidenav').sidenav();
+      $('.tabs').tabs();
+      $('.collapsible').collapsible();
+      $('select').formSelect();
+      $('.modal').modal();
+      $('.datepicker').datepicker();
+      $('.datepicker').datepicker({
+        container: 'body'
+      })
+    });
+  </script>
+</body>
+</html>

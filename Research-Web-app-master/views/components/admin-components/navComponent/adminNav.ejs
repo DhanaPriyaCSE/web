@@ -1,0 +1,199 @@
+<script>
+    Vue.component('nav-admin',{
+       template : `
+       <div>
+        <nav class="nav-extended purple darken-1">
+        <div class="nav-wrapper purple darken-1">
+            <div class="container">
+                <a href="/" class="brand-logo brand hide-on-med-and-down" id="page-title-l" data-aos="fade-down"
+                    data-aos-easing="linear" data-aos-duration="1000"><img src="assets/logo1.jpeg" alt="" style="width: 5%; height: 50px; margin-top: 10px;"/></a>
+                <a href="/" class="brand-logo brand hide-on-large-only" id="page-title-s"> <img src="assets/logo1.jpeg" alt="" style="width: 50px; height: 50px; margin-top: 10px;"/></a>
+                <a href="#" class="sidenav-trigger" data-target="mobile-links">
+                    <i class="material-icons">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="#">About</a></li>
+                    <li><a href="/profile" id="home-link"> Home</a></li>
+                    <li>
+                    <a class="btn waves-effect waves-light purple darken-1 white-text "
+                        href="/auth/logout" id="logout-link"> 
+                        <i class="material-icons left white-text">power_settings_new</i>Logout</a>
+                    </li>
+                     <li class="avatar center" style="margin-top:0%">
+                        <a href="#" class="btn-flat purple darken-1 tooltipped" data-position="bottom" data-tooltip="Logged in as: <%= user.Name%><br> <%= user.Email%>">
+                            <div class="container">
+                                <img src="<%=user.Thumbnail%>" class="responsive-img circle" style="width:50px;" />  </div>
+                        </a>
+                    </li>
+                </ul>
+                </div>
+                <div class="mobileshow">
+                <ul class="right hide-on-large-only">
+                    <li>
+                    <a
+                        class="btn waves-effect waves-light purple darken-1 white-text "
+                        href="/auth/logout"
+                        id="logout-link"> 
+                        <i class="material-icons left white-text">power_settings_new</i
+                            >Logout</a>
+                    </li>
+                   
+
+
+                </ul>
+            </div>
+        </div>
+        <div class="nav-content container">
+            <ul class="tabs profile purple darken-1">
+                <li class="tab">
+                    <a href="#existing-proposal" class="white-text">
+                        Modify Proposals
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#existing-paper" class="white-text">
+                        Modify Papers
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#existing-fellowship" class="white-text">
+                        Modify Fellowships
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#existing-filter" class="white-text">
+                        Modify Filters
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#new" class="white-text">
+                        Add new
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#admin" class="white-text">
+                        Admin access
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <ul class="sidenav purple darken-1" id="mobile-links">
+        <li><div class="user-view">
+            <div class="background white darken-4" style="margin-bottom:5%">
+      </div>
+      <a href="javascript:void(0);"  class="circle sidenav-close" id="close-menu">
+        <i class="purple-text text-accent-3 left material-icons">close</i></a>
+                <a href="#user" ><img class="circle"  src="<%=user.Thumbnail%>"></a>
+                <a href="#name"><span class="purple-text name"><%= user.Name%></span></a>
+                <a href="#name"><span class="purple-text name"><%= user.Email%></span></a>
+                <br>
+            </div>
+        </li>
+        <li><a href="#" class="white-text">About</a></li>
+        <li><a href="/profile" class="white-text" id="home-link"> Home</a></li>
+         
+        
+    </ul>
+    </div>`
+    });
+    var app = new Vue({
+        el: "#adminmain",
+        data(){
+            return{
+                searchuser:"",
+                selectuser: "",
+                proposals:[],
+                papers:[],
+                fellowships:[],
+                disciplines:[],
+                ministries:[],
+                fundingagencies:[],
+                indexedins:[],
+                typeofpapers:[],
+                typeoffellowships:[],
+                universities:[]
+            }
+        },
+         methods: {
+            user_select: function (event) {
+                document.getElementById('usersearch').focus();
+            },
+        },
+        created: function(){
+            
+        },
+        mounted: function () {
+            AOS.init();
+            $('.sidenav').sidenav();
+            $('.tooltipped').tooltip();
+
+            const proposal1 = axios.get('/profile/getDiscipline');
+            const proposal2 = axios.get('/profile/getFundingAgency');
+            const paper1 = axios.get('/profile/getIndexedIn');
+            const paper2 = axios.get('/profile/getTypeOfPaper');
+            const fellowship1 = axios.get('/profile/getTypeOfFellowship');
+            const fellowship2 = axios.get('/profile/getUniversity');
+            axios.all([proposal1, proposal2, paper1, paper2, fellowship1, fellowship2]).then(axios.spread((...responses) => {
+                const ele1 = responses[0]
+                const ele2 = responses[1]
+                const ele3 = responses[2]
+                const ele4 = responses[3]
+                const ele5 = responses[4]
+                const ele6 = responses[5]
+                this.disciplines = ele1.data.disciplines;
+                this.fundingagencies = ele2.data.fundingagencies;
+                this.indexedins = ele3.data.indexedin;
+                this.typeofpapers = ele4.data.typeofpapers;
+                this.typeoffellowships = ele5.data.typeoffellowships;
+                this.universities = ele6.data.universities;
+            })).catch(errors => {
+                console.log(error)
+                this.errored = true
+            }).finally(() => {
+
+                $('select').formSelect();
+            });
+            
+            
+        },
+        computed:{
+            MinistryList: function(){
+                // if(this.ministries.length)
+                    // $('select').formSelect();
+                return this.ministries;
+            },
+            DisciplineList: function () {
+                // if(this.disciplines.length)
+                    // $('select').formSelect();
+                return this.disciplines;
+            },
+            FundingAgencyList: function () {
+                // if(this.fundingagencies.length)
+                    // $('select').formSelect();
+                return this.fundingagencies;
+            },
+            IndexedInList: function () {
+                // if(this.indexedins.length)
+                    // $('select').formSelect();
+                return this.indexedins;
+            },
+            TypeOfPaperList: function () {
+                // if(this.typeofpapers.length)
+                    // $('select').formSelect();
+                return this.typeofpapers;
+            },
+            TypeOfFellowshipList:function(){
+                // if(this.typeoffellowships.length)
+                    // $('select').formSelect();
+                return this.typeoffellowships;
+            },
+            UniversityList:function(){
+                // if(this.universities.length)
+                    // $('select').formSelect();
+                return this.universities;
+            }
+        }
+        
+    });
+</script>

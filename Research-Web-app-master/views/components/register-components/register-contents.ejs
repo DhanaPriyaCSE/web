@@ -1,0 +1,95 @@
+<script>
+    Vue.component('register-content',{
+        template : `
+            <div class="container">
+                <center>
+                    <div class="row">
+                        <div class="col s12 l6 hide-on-med-and-down" data-aos="fade-right" data-aos-duration="1000"
+                            data-aos-easing="ease-in-sine">
+                            <br><br> <br>
+                            <img src="/assets/auth.svg" class="responsive-img" alt="" srcset="">
+                        </div>
+                        <div id="form" class="white col s12 push-l1 l6" data-aos="fade-left" data-aos-duration="1000"
+                            data-aos-easing="ease-in-sine">
+                            <ul class="tabs tabs-fixed-width">
+                                <li class="tab"><a class=" purple-text text-darken-1 active" href="#user_login">User
+                                        Registration</a></li>
+                            </ul>
+
+                            <form id="user_login" class="col s12" action="/auth/register" method="post">
+                                <center>
+                                    <div class="row">
+                                        <div class="col s11 l12 red-text">
+                                            <%= (errMsg) ? errMsg : '' %>
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="input-field col s11">
+                                            <i
+                                                class="material-icons prefix purple-text text-darken-1">account_circle</i>
+                                            <input id="user_email" name="email" title="Please Enter a Valid Email"
+                                                type="email" class="validate" required>
+                                            <span class="helper-text" data-error="Please Enter a Valid Email"
+                                                data-success="Please proceed to your Name"></span>
+                                            <label for="user_email">User Email</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s11">
+                                            <i class="material-icons prefix purple-text text-darken-1">account_box</i>
+                                            <input id="user_name" name="username" title="Do not leave this empty"
+                                                type="text"
+                                                class="validate" required>
+                                            <span class="helper-text" data-error="Do not leave this empty"
+                                                data-success="Please proceed to your Password"></span>
+                                            <label for="user_name">Name</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s11">
+                                            <i class="material-icons prefix purple-text text-darken-1">edit</i>
+                                            <input id="user_password" name="password" type="password" pattern=".{8,}"
+                                                title="Must contain atleast 8 characters" class="validate" required>
+                                            <span class="helper-text" data-error="Must contain atleast 8 characters"
+                                                data-success="Please Sign Up"></span>
+                                            <label for="user_password">Password</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s10 l10 push-l1 push-s1">
+                                            <button type="submit" form="user_login" name="user_submit"
+                                                id="user_login_button"
+                                                class="btn waves-effect waves-light purple darken-1"><i
+                                                    class="material-icons left white-text">login</i>Sign Up</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="input-field col s10 l10 push-l1 push-s1">
+                                            <a href="/auth/google" type="button" id="google_login_button"
+                                                class="btn waves-effect waves-light white purple-text text-darken-1">
+                                                <div class="left"><img width="20px"
+                                                        style="margin-top:7px; margin-right:8px" class="responsive-img "
+                                                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+                                                        alt="Sign Up with Google" /></div> &nbsp; Sign Up With Google
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s10 l10 push-l1 push-s1">
+                                            <span>Existing User?</span><a href="/login"
+                                                class="purple-text text-darken-1"> Login Here!</a>
+                                        </div>
+                                    </div>
+                                </center>
+                            </form>
+
+                        </div>
+                    </div>
+                </center>
+            </div>
+        `
+    });
+</script>

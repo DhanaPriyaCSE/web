@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <%- include('partials/css.ejs')%>
+
+</head>
+<body>
+  <div id = "profilemain">
+    <header>
+       <nav-profile></nav-profile>
+    </header>
+    <div>
+      <br>
+  <div class="container">
+      <div id="proposal">
+          <div class="row">
+              <form class="col s12">
+                  <div class="input-field col s12 l12" @click="proposal_select">
+                      <i class="material-icons prefix" @click="proposal_select">search</i>
+                      <input id="proposalsearch" v-model="searchproposal"  type="text" class="validate">
+                      <label for="icon_prefix" @click="proposal_select">Search</label>
+                  </div>
+              </form>
+              <div v-show="isFundingagencyLoaded" class="input-field col s12 l6">
+                  <select v-model="proposal_fundingagency" multiple>
+                      <option value="" disabled selected>Filter By Funding Agency</option>
+                      <template v-for="Fundingagency in FundingagencyList">
+                          <option  :value="Fundingagency._id">{{ Fundingagency.name }}</option>
+                    </template>
+                  </select>
+                  <label class="purple-text text-darken-1">Funding Agency</label>
+              </div> 
+              <div class="input-field col s12 l6">
+                  <select v-model="proposal_discipline" multiple >
+                      <option value="" disabled selected>Filter By Discipline</option>
+                      <template v-for="Discipline in DisciplineList">
+                        <option  :value="Discipline._id">{{ Discipline.name }}</option>
+                  </template>
+                  </select>
+                  <label class="purple-text text-darken-1">Discipline</label>
+              </div>
+          </div>  
+          <collapsible-parent :search="searchproposal" :fundingagency="proposal_fundingagency" :discipline="proposal_discipline"></collapsible-parent>
+      </div>
+      <div id="fellowship">
+          <div class="row">
+              <form class="col s12">
+                  <div class="input-field col s12 l12" @click="fellowship_select">
+                      <i class="material-icons prefix" @click="fellowship_select">search</i>
+                      <input id="fellowshipsearch" v-model="searchfellowship" type="text" class="validate">
+                      <label for="icon_prefix" @click="fellowship_select">Search</label>
+                  </div>
+              </form>
+              <div class="input-field col s12 l6">
+                <select v-model="fellowship_typeoffellowship">
+                    <option value="" selected>Filter By Discipline</option>
+                    <template v-for="Typeoffellowship in TypeoffellowshipList">
+                        <option  :value="Typeoffellowship.name">{{ Typeoffellowship.name }}</option>
+                  </template>
+                </select>
+                  <label class="purple-text text-darken-1">Discipline</label>
+              </div>
+              <div class="input-field col s12 l6">
+                  <select v-model="fellowship_university">
+                      <option value="" selected>Filter By Degree</option>
+                      <template v-for="University in UniversityList">
+                        <option  :value="University.name">{{ University.name }}</option>
+                  </template>
+                  </select>
+                  <label class="purple-text text-darken-1">Degree</label>
+              </div>
+          </div> 
+          <collapsible-fellowship :search="searchfellowship" :typeoffellowship="fellowship_typeoffellowship" :university="fellowship_university"></collapsible-fellowship>
+          
+      </div>
+      <div id="paper">
+          <div class="row">
+              <form class="col s12">
+                  <div class="input-field col s12 l12" @click="paper_select">
+                      <i class="material-icons prefix" @click="paper_select">search</i>
+                      <input id="papersearch" type="text" v-model="searchpaper" class="validate">
+                      <label for="icon_prefix " @click="paper_select">Search</label>
+                  </div>
+                </form>
+              <div class="input-field col s12 l6">
+                <select v-model="paper_typeofpaper">
+                    <option value="" selected>Filter By Research Area</option>
+                    <template v-for="Typeofpaper in TypeofpaperList">
+                        <option  :value="Typeofpaper.name">{{ Typeofpaper.name }}</option>
+                  </template>
+                </select>
+                  <label class="purple-text text-darken-1">Research Area</label>
+              </div>
+              <div class="input-field col s12 l6">
+                  <select v-model="paper_indexedin">
+                      <option value="" selected>Filter By Indexed In</option>
+                      <template v-for="Indexedin in IndexedinList">
+                        <option  :value="Indexedin.name">{{ Indexedin.name }}</option>
+                  </template>
+                  </select>
+                  <label class="purple-text text-darken-1">Indexed in</label>
+              </div>
+          </div> 
+          <collapsible-paper :search="searchpaper" :typeofpaper="paper_typeofpaper" :indexedin="paper_indexedin"></collapsible-paper>
+      </div>
+  </div>
+     </div>
+    <!--
+    <content-profile ref="content"></content-profile>
+    -->
+    <footer-end></footer-end>
+</div>
+  
+  <%- include('./partials/js.ejs')%>
+  <%- include('./components/profile-components/collapsible-componentfellowship.ejs')%>
+  <%- include('./components/profile-components/collapsible-componentproposal.ejs')%>
+  <%- include('./partials/footer.ejs')%>
+  <%- include('./components/profile-components/collapsible-componentpaper.ejs')%>
+  <!-- <%- include('./components/profile-components/profile-content.ejs')%> -->
+<%- include('./components/profile-components/profile-nav.ejs')%>
+</body>
+</html>

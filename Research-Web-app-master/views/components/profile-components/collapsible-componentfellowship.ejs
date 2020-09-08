@@ -1,0 +1,102 @@
+<script>
+    Vue.component('collapsiblefellowship',{
+        props : ['fellowship'],
+        template : `
+        <li>
+            <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>{{ fellowship.researchtopic }}</div>
+            <div class="collapsible-body">
+                <div class="row">
+                    
+                    <div class="col s12 l3"><img src="/assets/test.jpeg" alt="" class="responsive-img"></div>
+                    <div class="col s12 l9">Description : {{ fellowship.description }}</div>
+                    <div class="col s12 l9">Discipline : {{ fellowship.typeoffellowship.name }}</div>
+                    <div class="col s12 l9">Degree : {{ fellowship.university.name }}</div><br>
+                    <div class="col s12 l9"><a :href="fellowship.link" class="btn waves-effect waves-purple white-text purple">Find More</a></div>
+                  
+                    
+                    
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col s12 l6">Published Date : {{ (new Date(fellowship.publishdate)).getDate() + '/' + ((new Date(fellowship.publishdate)).getMonth()+1) + '/' + (new Date(fellowship.publishdate)).getFullYear() }}</div>
+                    <div class="col s12 l6 push-l2">Last Date : {{ (new Date(fellowship.lastdateapplication)).getDate() + '/' + ((new Date(fellowship.lastdateapplication)).getMonth()+1) + '/' + (new Date(fellowship.lastdateapplication)).getFullYear() }}</div>
+                </div>
+            </div>
+        </li>
+        `,
+        mounted :function(){
+            $('.collapsible').collapsible();
+        }
+    });
+    Vue.component('collapsible-fellowship',{
+        props: ['search','typeoffellowship','university'],
+       data : function () {
+         return {
+             fellowships : [],
+             isLoaded : false
+         }  
+       },
+        template:`
+        <div class="container">
+            <div v-if="!isLoaded" class=" container center">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="filterFellowships.length === 0" >
+                <div class=" row center">
+                    <div class="col s6 l4 offset-l4 offset-s3">
+                        <img src="/assets/Not_Found.svg" class="responsive-img" />
+                    </div>
+                </div>
+                <div class=" row center">
+                    <div class="col s12 l12">
+                        <h5> No results.... </h5>
+                    </div>
+                </div>
+            </div>
+            <div v-else>
+                <ul class="collapsible"> 
+                    <template v-for="fellowship in fellowships" >
+                        <collapsiblefellowship :fellowship="fellowship"></collapsiblefellowship>
+                    </template>   
+                </ul>
+            </div>
+        </div>
+        `,
+        mounted(){
+            axios
+                    .get('/profile/getFellowships')
+                    .then(response => {
+                    this.fellowships = response.data.fellowships
+                    
+                    })
+                    .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                    })
+                    .finally(() => this.isLoaded = true);
+        },
+        computed: {
+            filterFellowships: function () {
+                var ele = this.fellowships.filter((para) => {
+                    return para.researchtopic.toUpperCase().match(this.search.toUpperCase()) &&
+                    para.typeoffellowship.name.toUpperCase().match(this.typeoffellowship.toUpperCase()) &&
+                    para.university.name.toUpperCase().match(this.university.toUpperCase());
+                });
+                document.getElementById('fellowshipbadge').innerText = ele.length;
+                return ele;
+            }
+        }
+    });
+</script>

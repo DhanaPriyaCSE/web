@@ -1,0 +1,194 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <%- include('partials/css.ejs')%>
+
+</head>
+<body>
+    <!-- navbar -->
+<header>
+    <nav class="nav-extended purple darken-1">
+        <div class="nav-wrapper purple darken-1">
+            <div class="container">
+                <a href="#" class="brand-logo">Logo</a>
+                <a href="#" class="sidenav-trigger" data-target="mobile-links">
+                    <i class="material-icons">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="#">About</a></li>
+                    <li><a href="#" class="tooltipped" data-position="bottom" data-tooltip="<%= user.Name+'/n'+user.Email%>">
+                        <img src="<%=user.Thumbnail%>" class="responsive-img circle"/>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="nav-content container">
+            <ul class="tabs purple darken-1">
+                <li class="tab">
+                    <a href="#proposal" class="white-text"><span class="badge">1</span>
+                        Call for Proposal
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#paper" class="white-text"><span class="badge">1</span>
+                        Call for Paper
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#fellowship" class="white-text"><span class="badge">1</span>
+                        Call for Fellowship
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <ul class="sidenav purple darken-1" id="mobile-links">
+        <li><a href="#" class="tooltipped" data-position="bottom" data-tooltip="<%= user.Name+'/n'+user.Email%>">
+            <img src="<%=user.Thumbnail%>" class="responsive-img circle"/>
+            </a>
+        </li>
+        <li><a href="#" class="white-text">About</a></li>   
+    </ul>
+</header>
+<br>
+    <div class="container">
+        <div id="proposal">
+            <div class="row">
+                <form class="col s12">
+                    <div class="input-field col s12 l12">
+                        <i class="material-icons prefix">search</i>
+                        <input id="icon_prefix" type="text" class="validate">
+                        <label for="icon_prefix">Search</label>
+                    </div>
+                </form>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Ministry</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Ministry</label>
+                </div>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Discipline</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Discipline</label>
+                </div>
+            </div>  
+            <ul class="collapsible">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>Proposal 1</div>
+                    <div class="collapsible-body">
+                        <div class="row">
+                            <div class="col s12 l3"><img src="assets/test.jpeg" alt="" class="responsive-img"></div>
+                            <div class="col s12 l9">Description. This can be split further based on what information we want to show.</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div id="fellowship">
+            <div class="row">
+                <form class="col s12">
+                    <div class="input-field col s12 l12">
+                        <i class="material-icons prefix">search</i>
+                        <input id="icon_prefix" type="text" class="validate">
+                        <label for="icon_prefix">Search</label>
+                    </div>
+                </form>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Ministry</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Ministry</label>
+                </div>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Discipline</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Discipline</label>
+                </div>
+            </div> 
+            <ul class="collapsible">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>Fellowship 1</div>
+                    <div class="collapsible-body">
+                        <div class="row">
+                            <div class="col s12 l3"><img src="test.jpeg" alt="" class="responsive-img"></div>
+                            <div class="col s12 l9">Description. This can be split further based on what information we want to show.</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div id="paper">
+            <div class="row">
+                <form class="col s12">
+                    <div class="input-field col s12 l12">
+                        <i class="material-icons prefix">search</i>
+                        <input id="icon_prefix" type="text" class="validate">
+                        <label for="icon_prefix">Search</label>
+                    </div>
+                  </form>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Ministry</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Ministry</label>
+                </div>
+                <div class="input-field col s12 l6">
+                    <select>
+                        <option value="" disabled selected>Filter By Discipline</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label class="purple-text text-darken-1">Discipline</label>
+                </div>
+            </div> 
+            <ul class="collapsible">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons purple-text text-darken-1">expand_more</i>Paper 1</div>
+                    <div class="collapsible-body">
+                        <div class="row">
+                            <div class="col s12 l3"><img src="test.jpeg" alt="" class="responsive-img"></div>
+                            <div class="col s12 l9">Description. This can be split further based on what information we want to show.</div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+  <!-- photo / grid -->
+
+  <!-- parallax -->
+
+  <!-- services / tabs -->
+
+  <!-- parallax -->
+
+  <!-- contact form -->
+
+  <!-- footer -->
+
+  <!-- Compiled and minified JavaScript -->
+  <%- include('./partials/js.ejs')%>
+</body>
+</html>

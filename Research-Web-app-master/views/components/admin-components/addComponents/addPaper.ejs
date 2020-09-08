@@ -1,0 +1,146 @@
+<script>
+    Vue.component('add-paper',{
+        props:['typeofpaper-list','indexedin-list'],
+        data:function(){
+            return{
+
+            }
+        },
+        template:`
+        <div> <!-- WRAPPER-->
+
+            <div class="col s12 m7 l5 card waves-effect waves-purple center modal-trigger" href="#addpapermodal">
+                <div class="card-image center">
+                    <div class="row center">
+                        <i class="col s12 l12 material-icons purple-text text-darken-1 large">add</i>
+                    </div>
+                    <div class="row center">
+                        <span class="col s12 l12 purple-text text-darken-1">Add Call for Papers</span>
+                    </div>
+                </div>
+            </div>
+            <form id="proposal" v-on:submit.prevent="submitPaper">
+                <div class="modal modal-fixed-footer" id="addpapermodal">
+                    <div class="row modal-content">
+                        <div class="container">
+                            <div class="col s12 l12 input-field">
+                                <input id="title" name="name" type="text">
+                                <label for="title">Title</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <input id="description" name="description" type="text">
+                                <label for="description">Description</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <input id="venue" name="conferencevenue" type="text">
+                                <label for="venue">Conference Venue</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                               <select name="typeofpaperId" required>
+                                    <option value="" selected disabled>Select Research Area</option>
+                                    <template v-for="paper in typeofpaperList">
+                                        <option :value="paper._id">{{ paper.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Research Area</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                                 <select name="indexedinId" required>
+                                    <option value="" selected disabled>Select Indexed In</option>
+                                    <template v-for="indexed in indexedinList">
+                                        <option :value="indexed._id">{{ indexed.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Indexed In</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <textarea class="materialize-textarea" id="desc" name="link" type="text"></textarea>
+                                <label for="title">File</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="publishdate" class="datepicker" id="sdate">
+                                <label for="sdate">Published Date</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="lastdatesubmission" class="datepicker" id="edate">
+                                <label for="edate">Last Date of Submission</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn-flat white-text red darken-3 modal-close"><i class="material-icons left">close</i>Cancel</a>
+                        <button type="submit" class="btn-flat white-text green"><i class="material-icons left">save</i> Save Changes</button>
+                    </div>
+                </div>
+            </form>
+
+        </div> <!-- WRAPPER-->
+        `,
+        methods: {
+            submitPaper: function (event) {
+                var object = {};
+                //object['_id'] = this.eachrow._id;
+                (new FormData(event.target)).forEach(function (value, key) {
+                    object[key] = value;
+                });
+                console.log("Form Data:", object);
+                Swal.fire({
+                    title: 'Are you sure you want to save this record ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/addOrChangeCallForPaper',
+                            object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Paper added successfully!") {
+                        Swal.fire(
+                            {
+                                title: "Paper was saved successfully!!",
+                                text: "The paper was saved successfully!",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see details!',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+                        })
+                    }
+                    else if (result.value.data === "Paper not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Paper Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Check all the fields of the form',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+        }
+    })
+</script>

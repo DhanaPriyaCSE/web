@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <%- include('partials/css.ejs')%>
+  </head>
+  <body>
+    <div id="root">
+      <header>
+        <home-nav></home-nav>
+        <carousel></carousel>
+      </header>
+      <home-content></home-content>
+      <footer-end></footer-end>
+    </div>
+    
+    <%- include('./partials/js.ejs')%>
+    <%- include('./components/home-components/carousel.ejs')%>
+    <%- include('./components/home-components/home-content-section.ejs')%>
+    <%- include('./partials/footer.ejs')%>
+    <%- include('./components/home-components/user-nav.ejs')%>
+  </body>
+</html>

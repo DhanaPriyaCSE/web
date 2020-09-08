@@ -1,0 +1,216 @@
+<script>
+     Vue.component('nav-profile',{
+        template : `
+        <div>
+            <nav class="nav-extended purple darken-1">
+        <div class="nav-wrapper purple darken-1">
+            <div class="container">
+                <a href="/" class="brand-logo brand hide-on-med-and-down" id="page-title-l" data-aos="fade-down"
+                    data-aos-easing="linear" data-aos-duration="1000"><img src="assets/logo1.jpeg" alt="" style="width: 5%; height: 50px; margin-top: 10px;"/></a>
+                <a href="/" class="brand-logo brand hide-on-large-only" id="page-title-s"> <img src="assets/logo1.jpeg" alt="" style="width: 50px; height: 50px; margin-top: 10px;"/></a>
+                <a href="#" class="sidenav-trigger" data-target="mobile-links">
+                    <i class="material-icons">menu</i>
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="#">About</a></li>
+                    <li><a href="/profile" id="home-link"> Home</a></li>
+                    <li>
+                    <a class="btn waves-effect waves-light purple darken-1 white-text "
+                        href="/auth/logout" id="logout-link"> 
+                        <i class="material-icons left white-text">power_settings_new</i>Logout</a>
+                    </li>
+                    <li class="avatar center" style="margin-top:0%">
+                        <a href="#" class="btn-flat purple darken-1 tooltipped" data-position="bottom" data-tooltip="Logged in as: <%= user.Name%><br> <%= user.Email%>">
+                            <div class="container">
+                                <img src="<%=user.Thumbnail%>" class="responsive-img circle" style="width:50px;" />  </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mobileshow">
+                <ul class="right hide-on-large-only">
+                    <li>
+                    <a
+                        class="btn waves-effect waves-light purple darken-1 white-text "
+                        href="/auth/logout"
+
+                        id="logout-link"> 
+                        <i class="material-icons left white-text">power_settings_new</i
+                            >Logout</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="nav-content container">
+            <ul class="tabs profile purple darken-1" >
+                <li class="tab">
+                    <a href="#proposal" class="white-text"><span class="badge purple-text text-darken-1 white" style="border-radius:50px" id="proposalbadge"></span>
+                        Call for Proposal
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#paper" class="white-text"><span class="badge purple-text text-darken-1  white"  style="border-radius:50px" id="paperbadge"></span>
+                        Call for Paper
+                    </a>
+                </li>
+                <li class="tab">
+                    <a href="#fellowship" class="white-text"><span class="white purple-text text-darken-1 badge" style="border-radius:50px" id="fellowshipbadge"></span>
+                        Call for Fellowship
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <ul class="sidenav purple darken-1" id="mobile-links">
+        <li><div class="user-view">
+            <div class="background white darken-4" style="margin-bottom:5%">
+      </div>
+      <a href="javascript:void(0);"  class="circle sidenav-close" id="close-menu">
+        <i class="purple-text text-accent-3 left material-icons">close</i></a>
+                <a href="#user" ><img class="circle"  src="<%=user.Thumbnail%>"></a>
+                <a href="#name"><span class="purple-text name"><%= user.Name%></span></a>
+                <a href="#name"><span class="purple-text name"><%= user.Email%></span></a>
+                <br>
+            </div>
+        </li>
+        <li><a href="#" class="white-text">About</a></li>
+        <li><a href="/profile" class="white-text" id="home-link"> Home</a></li>
+         
+        
+    </ul>
+            
+        </div>`
+});
+var app = new Vue({
+        el: "#profilemain",
+        data(){
+            return{
+                isFundingagencyLoaded : false,
+                isDisciplineLoaded : false,
+                isTypeofpaperLoaded: false,
+                isIndexedinLoaded: false,
+                isTypeoffellowshipLoaded: false,
+                isUniversityLoaded: false,
+                errored : false,
+                searchpaper:"",
+                searchproposal: "",
+                searchfellowship: "",
+                proposal_fundingagency : [],
+                proposal_discipline : [],
+                fellowship_typeoffellowship : "",
+                fellowship_university : "",
+                paper_typeofpaper : "",
+                paper_indexedin : "",
+                fundingagencies:[],
+                disciplines : [],
+                typeofpapers: [],
+                indexedin: [],
+                typeoffellowships: [],
+                universities: []
+            }
+        },
+        methods:{
+            proposal_select : function (event) {
+                document.getElementById('proposalsearch').focus();
+            },
+            fellowship_select : function (event) {
+                document.getElementById('fellowshipsearch').focus();
+            },
+            paper_select : function (event) {
+                document.getElementById('papersearch').focus();
+            },
+        },
+        computed :{
+            FundingagencyList : function(){
+                return this.fundingagencies;
+            },
+            DisciplineList : function(){
+                return this.disciplines;
+            },
+            TypeofpaperList: function(){
+                return this.typeofpapers;
+            },
+            IndexedinList: function(){
+                return this.indexedin;
+            },
+            TypeoffellowshipList:function(){
+                return this.typeoffellowships;
+            },
+            UniversityList: function(){
+                return this.universities;
+            }
+
+        },
+        mounted:function(){
+            AOS.init();
+            $('.sidenav').sidenav();
+            $('.tooltipped').tooltip();
+            
+            axios.get('/profile/getFundingagency').then((ele)=>{
+                this.fundingagencies = ele.data.fundingagencies;
+
+            }).catch(error => {
+                    console.log(error)
+                    this.errored = true
+            })
+            .finally(() =>{this.isFundingagencyLoaded = true;
+                $('select').formSelect();
+            });
+            axios.get('/profile/getDiscipline').then((ele)=>{
+                this.disciplines = ele.data.disciplines;
+
+            }).catch(error => {
+                    console.log(error)
+                    this.errored = true
+            })
+            .finally(() =>{this.isDisciplineLoaded = true;
+                $('select').formSelect();
+            });
+            axios.get('/profile/getTypeofpaper').then((ele) => {
+                this.typeofpapers = ele.data.typeofpapers;
+
+            }).catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+                .finally(() => {
+                    this.isTypeofpaperLoaded = true;
+                    $('select').formSelect();
+                });
+            axios.get('/profile/getIndexedin').then((ele) => {
+                this.indexedin = ele.data.indexedin;
+
+            }).catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+                .finally(() => {
+                    this.isIndexedinLoaded = true;
+                    $('select').formSelect();
+                });
+            axios.get('/profile/getTypeoffellowship').then((ele) => {
+                this.typeoffellowships = ele.data.typeoffellowships;
+
+            }).catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+                .finally(() => {
+                    this.isTypeoffellowshipLoaded = true;
+                    $('select').formSelect();
+                });
+            axios.get('/profile/getUniversity').then((ele) => {
+                this.universities = ele.data.universities;
+
+            }).catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+                .finally(() => {
+                    this.isUniversityLoaded = true;
+                    $('select').formSelect();
+                });
+         }
+    });
+</script>

@@ -1,0 +1,271 @@
+<script>
+   Vue.component('user-details',{
+    props:['user'],
+    methods:{
+      promote: function (event) {
+        var object = {};
+        object['_id'] = this.user._id;
+        (new FormData(event.target)).forEach(function (value, key) {
+          object[key] = value;
+        });
+        console.log("Form Data:", object);
+        Swal.fire({
+          title: 'Are you sure you want to promote the user?',
+          showCancelButton: true,
+          icon: 'info',
+          confirmButtonText: 'Confirm',
+          showLoaderOnConfirm: true,
+          preConfirm: (login) => {
+            console.log("reached axios");
+            return axios.post('/profile/promoteUserPriviledge',
+              object).then((res) => { return res }).catch(err => console.log(err))
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+
+
+          if (result.value.data === "Promoted user successfully!") {
+            Swal.fire(
+              {
+                title: "Promoted user successfully!",
+                text: "Promoted user successfully!",
+                showConfirmButton: true,
+                confirmButtonText: 'Reload the page to see details!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                icon: 'success'
+              }
+            ).then((res) => {
+              console.log(res);
+
+              if (res.isConfirmed) {
+                location.reload();
+              }
+
+            })
+          }
+          else if (result.value.data === "Unable to find user!") {
+            Swal.fire(
+              'Unable to process request',
+              'User Not found.',
+              'error'
+            )
+          }
+
+        });
+      },
+      demote: function (event) {
+        var object = {};
+        object['_id'] = this.user._id;
+        (new FormData(event.target)).forEach(function (value, key) {
+          object[key] = value;
+        });
+        console.log("Form Data:", object);
+        Swal.fire({
+          title: 'Are you sure you want to demote the user?',
+          showCancelButton: true,
+          icon: 'info',
+          confirmButtonText: 'Confirm',
+          showLoaderOnConfirm: true,
+          preConfirm: (login) => {
+            console.log("reached axios");
+            return axios.post('/profile/demoteUserPriviledge',
+              object).then((res) => { return res }).catch(err => console.log(err))
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+
+
+          if (result.value.data === "Demoted user successfully!") {
+            Swal.fire(
+              {
+                title: "Demoted user successfully!",
+                text: "Demoted user successfully!",
+                showConfirmButton: true,
+                confirmButtonText: 'Reload the page to see details!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                icon: 'success'
+              }
+            ).then((res) => {
+              if (res.isConfirmed) {
+                location.reload();
+              }
+
+            })
+          }
+          else if (result.value.data === "Unable to find user!") {
+            Swal.fire(
+              'Unable to process request',
+              'User Not found.',
+              'error'
+            )
+          }
+
+        });
+      },
+      deleteuser: function (event) {
+        var object = {};
+        object['_id'] = this.user._id;
+        (new FormData(event.target)).forEach(function (value, key) {
+          object[key] = value;
+        });
+        console.log("Form Data:", object);
+        Swal.fire({
+          title: 'Are you sure you want delete the user?',
+          showCancelButton: true,
+          icon: 'info',
+          confirmButtonText: 'Confirm',
+          showLoaderOnConfirm: true,
+          preConfirm: (login) => {
+            console.log("reached axios");
+             return axios.post('/profile/deleteUser',
+              object).then((res) => { return res }).catch(err => console.log(err))
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+
+
+          if (result.value.data === "Deleted user successfully!") {
+            Swal.fire(
+              {
+                title: "Deleted user successfully!",
+                text: "Deleted user successfully!",
+                showConfirmButton: true,
+                confirmButtonText: 'Reload the page to see details!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                icon: 'success'
+              }
+            ).then((res) => {
+
+              if (res.isConfirmed) {
+                location.reload();
+              }
+
+            })
+          }
+          else if (result.value.data === "Unable to find and delete user!") {
+            Swal.fire(
+              'Unable to process request',
+              'User Not found.',
+              'error'
+            )
+          }
+
+        });
+      }
+    },
+    template:`
+        <li class="collection-item avatar" style="justify-content: space-between;">
+          <img v-bind:src="user.Thumbnail" alt="" class="circle">
+          <span class="title">{{user.userName}}</span>
+          <p >Name: {{user.Name}} <br>
+          Email:{{user.Email}}<br>
+          </p>
+          <div class="secondary-content" v-if="user.admin == true">
+            <form  v-on:submit.prevent="demote" style="float:left;">
+               <button type="submit"  class="btn-flat orange-text white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Demote">person_remove</i></button>
+            </form>
+            <form  v-on:submit.prevent="deleteuser" style="float:right;">
+                <button type="submit" class="btn-flat red-text white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Delete">delete</i></button>
+              </form>
+          </div>
+          <div  class="secondary-content" v-else-if="user.admin == false">
+            <form  v-on:submit.prevent="promote" style="float:left;" >
+               <button type="submit" class="btn-flat green-text text-accent-4 white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Promote">person_add</i></button>
+            </form>
+            <form  v-on:submit.prevent="deleteuser" style="float:right;">
+               <button type="submit" class="btn-flat red-text white"><i class="material-icons tooltipped" data-position="bottom" data-tooltip="Delete">delete</i></button>
+            </form>
+          </div>
+        </li>
+                
+  `,
+      mounted:function(){
+          $('.tooltipped').tooltip();
+      }
+
+  });
+    Vue.component('admin-manage',{
+       props: ['search','select'],
+      data() {
+        return {
+          isLoaded: false,
+          users: []
+        }
+      },
+        template:`
+        <div> <!-- WRAP ALL BELOW INTO SINGLE ROOT -->
+
+            
+            <div v-if="!isLoaded" class=" container center">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                        <div class="circle-clipper left">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="gap-patch">
+                            <div class="circle"></div>
+                        </div>
+                        <div class="circle-clipper right">
+                            <div class="circle"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="filterusers.length === 0">
+              <div class=" row center">
+                <div class="col s6 l4 offset-l4 offset-s3">
+                  <img src="/assets/Not_Found.svg" class="responsive-img" />
+                </div>
+              </div>
+              <div class=" row center">
+                <div class="col s12 l12">
+                  <h5> No results.... </h5>
+                </div>
+              </div>
+            </div>
+            
+            <div v-else>
+          
+                <ul class="collection">
+                  <template v-for = "user in filterusers">
+                    <user-details :user="user"></user-details>
+                  </template>
+                
+                </ul>
+        
+            </div>
+
+        </div> <!-- WRAP ALL ABOVE INTO SINGLE ROOT -->
+        `,
+    mounted(){
+        axios
+          .get('/profile/getUser')
+          .then(response => {
+            this.users = response.data.users
+
+          })
+          .catch(error => {
+            console.log(error)
+            this.errored = true
+          })
+          .finally(() => this.isLoaded = true);
+      },
+      computed: {
+        filterusers: function () {
+          var ele = this.users.filter((para) => {
+            return para.Name.toUpperCase().match(this.search.toUpperCase()) &&
+            para.admin.toString().toUpperCase().match(this.select.toUpperCase());
+          });
+          return ele;
+        }
+      }
+    });
+  
+
+</script>

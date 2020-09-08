@@ -1,0 +1,142 @@
+<script>
+    Vue.component('add-fellowship', {
+        props:['typeoffellowship-list','university-list'],
+        data: function () {
+            return {
+
+            }
+        },
+        template: `
+        <div><!--WRAPPER-->
+
+            <div class="col s12 m7 l5 push-l1 card waves-effect waves-purple center modal-trigger" href="#addfellowshipmodal">
+                <div class="card-image center">
+                    <div class="row center">
+                        <i class="col s12 l12 material-icons purple-text text-darken-1 large">add</i>
+                    </div>
+                    <div class="row center">
+                        <span class="col s12 l12 purple-text text-darken-1">Add Call for Fellowships</span>
+                    </div>
+                </div>
+            </div>
+            <form id="fellowship" v-on:submit.prevent="submitFelowship">
+                <div class="modal modal-fixed-footer" id="addfellowshipmodal">
+                    <div class="row modal-content">
+                        <div class="container">
+                            <div class="col s12 l12 input-field">
+                                <input id="title" name="researchtopic" type="text">
+                                <label for="title">Research Topic</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <input id="description" name="description" type="text">
+                                <label for="description">Description</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                               <select name="typeoffellowshipId" required>
+                                    <option value="" selected disabled>Select Discipline</option>
+                                    <template v-for="fellowship in typeoffellowshipList">
+                                        <option :value="fellowship._id">{{ fellowship.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Discipline</label>
+                            </div>
+                            <div class="input-field col s12 l12">
+                                 <select name="universityId" required>
+                                    <option value="" selected disabled>Select Degree</option>
+                                    <template v-for="university in universityList">
+                                        <option :value="university._id">{{ university.name }}</option>
+                                    </template>
+                                </select>
+                                <label class="">Degree</label>
+                            </div>
+                            <div class="col s12 l12 input-field">
+                                <textarea class="materialize-textarea" id="desc" name="link" type="text"></textarea>
+                                <label for="title">File</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="publishdate" class="datepicker" id="sdate">
+                                <label for="sdate">Published Date</label>
+                            </div>
+                            <div class="col s12 l6">
+                                <input type="text" name="lastdateapplication" class="datepicker" id="edate">
+                                <label for="edate">Last Date of Application</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="javascript:void(0)" class="btn-flat white-text red darken-3 modal-close"><i class="material-icons left">close</i> Cancel</a>
+                        <button type="submit" class="btn-flat white-text green"><i class="material-icons left">save</i> Save Changes</button>
+                    </div>
+                </div>
+            </form>   
+            
+        </div><!--WRAPPER-->
+        `,
+        methods: {
+            submitFelowship: function (event) {
+                var object = {};
+                //object['_id'] = this.eachrow._id;
+                (new FormData(event.target)).forEach(function (value, key) {
+                    object[key] = value;
+                });
+                console.log("Form Data:", object);
+                Swal.fire({
+                    title: 'Are you sure you want to edit this record ?',
+                    showCancelButton: true,
+                    icon: 'info',
+                    confirmButtonText: 'Confirm',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        console.log("reached axios");
+                        return axios.post('/profile/addOrChangeCallForFellowship',
+                            object).then((res) => { return res }).catch(err => console.log(err))
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    // what are you returning ? if it's an error we need to show appropriate msg to user   
+                    if (result.value.data === "Fellowship added successfully!") {
+                        Swal.fire(
+                            {
+                                title: "Fellowship was saved successfully!!",
+                                text: "The fellowship was saved successfully!",
+                                showConfirmButton: true,
+                                confirmButtonText: 'Reload the page to see details!',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                                allowEnterKey: false,
+                                icon: 'success'
+                            }
+                        ).then((res) => {
+                            console.log(res);
+
+                            if (res.isConfirmed) {
+                                location.reload();
+                            }
+                        })
+                    }
+                    else if (result.value.data === "Fellowship not found!!!") {
+                        Swal.fire(
+                            'Unable to process request',
+                            'Fellowship Not found.',
+                            'error'
+                        )
+                    }
+                    else if (result.value.data === "Insufficient data !!") {
+                        Swal.fire(
+                            'Insufficient data !',
+                            'Check all the fields of the form',
+                            'warning'
+                        )
+                    }
+                    else if (result.dismiss === Swal.DismissReason.cancel) {
+                        Swal.fire(
+                            'Cancelled',
+                            'No changes made',
+                            'error'
+                        )
+                    }
+                });
+            }
+        }
+    })
+</script>
